@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: personalhub-api
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/personalhub}
+    username: ${DB_USERNAME:personalhub}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  http:
+    clients:
+      connect-timeout: 5s
+      read-timeout: 20s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  security:
+    api-key: ${PERSONALHUB_API_KEY}
+  github:
+    username: ${GITHUB_USERNAME:octocat}
+    token: ${GITHUB_TOKEN:}
+    base-url: ${GITHUB_API_URL:https://api.github.com}
+    initial-days: ${SYNC_INITIAL_DAYS:30}
+    overlap-minutes: ${SYNC_OVERLAP_MINUTES:60}
+    max-repositories: ${SYNC_MAX_REPOSITORIES:10}
+    max-pages: ${SYNC_MAX_PAGES:10}
+  sync:
+    enabled: ${SYNC_ENABLED:false}
+    fixed-delay-ms: ${SYNC_FIXED_DELAY_MS:1800000}
+    initial-delay-ms: 30000

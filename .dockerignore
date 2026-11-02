@@ -1,0 +1,17 @@
+.git
+.env*
+target
+.idea
+.vscode
+*.md
+secrets/
+credentials/
+application-local.yml
+application-local.yaml
+application-local.properties
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore

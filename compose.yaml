@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: personalhub
+      POSTGRES_USER: personalhub
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U personalhub -d personalhub"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/personalhub
+      DB_USERNAME: personalhub
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      GITHUB_USERNAME: ${GITHUB_USERNAME:?Set GITHUB_USERNAME in .env}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      PERSONALHUB_API_KEY: ${PERSONALHUB_API_KEY:?Set PERSONALHUB_API_KEY in .env}
+      SYNC_ENABLED: ${SYNC_ENABLED:-false}
+      SYNC_MAX_REPOSITORIES: ${SYNC_MAX_REPOSITORIES:-10}
+
+volumes:
+  postgres_data:
