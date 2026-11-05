@@ -87,6 +87,8 @@ Các bước SKIPPED / lỗi còn lại:
 - [x] API tổng hợp GitHub + Notion cho dashboard; OpenAPI/Postman và tests đã cập nhật.
 - [ ] Chỉ số sync có lưu lịch sử và giám sát vận hành.
 - [x] Dashboard có Tổng quan/GitHub/Notion/Đồng bộ, responsive và cơ chế kết nối bằng key trong bộ nhớ.
-- [ ] Triển khai HTTPS và backup/restore PostgreSQL.
+- [x] Backup/restore PostgreSQL có checksum; kiểm phục hồi DB thật và chốt không ghi đè DB đang dùng.
+- [x] Bộ Compose/Caddy production và nghiệm thu GitHub/Notion thật qua HTTPS localhost. Xem [bằng chứng vận hành](../OPERATIONS_VERIFICATION.md).
+- [ ] Đưa lên server/tên miền công khai, xác minh DNS/ACME và cài lịch backup ngoài máy.
 
 Các đầu việc cuối là backlog, chưa được đánh dấu hoàn thành. Checklist dữ liệu thật là lượt kiểm tra của bạn; kết quả automated tests được báo riêng trong tài liệu xác minh.

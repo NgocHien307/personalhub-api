@@ -114,7 +114,7 @@ Sau khi `POST /api/v1/sync/github`, gọi `GET /api/v1/sync/runs` đến khi xu�
 
 GitHub bounded retry/rate-limit backoff và startup recovery đã hoàn thành trong mốc 04/11/2026; xem [cơ chế và giới hạn](GITHUB_SYNC_RELIABILITY_VI.md), [báo cáo kiểm tra](GITHUB_SYNC_RELIABILITY_VERIFICATION.md). Các hạng mục còn lại:
 
-1. Backup/restore PostgreSQL và triển khai HTTPS. [Dashboard](DASHBOARD_UI_VI.md), API tổng quan và Request ID đã được bổ sung; metrics sync có lưu lịch sử vẫn là backlog.
+1. Backup/restore PostgreSQL và bộ triển khai HTTPS đã có ở [mốc vận hành](OPERATIONS_VI.md), được nghiệm thu với DB riêng tại localhost. Cần server/tên miền để đưa lên Internet. [Dashboard](DASHBOARD_UI_VI.md), API tổng quan và Request ID đã được bổ sung; metrics sync có lưu lịch sử vẫn là backlog.
 2. Distributed lease/locking trước khi chạy nhiều replica. Recovery Notion đã được bổ sung ở [mốc tiếp theo](NOTION_RECOVERY_VI.md).
 3. Cursor-based pagination, query filtering, testing đầy đủ hơn.
 4. GitHub OAuth2 / token management. Notion Integration đã được bổ sung trong Sprint 2; xem [hướng dẫn Notion](NOTION_INTEGRATION_VI.md).

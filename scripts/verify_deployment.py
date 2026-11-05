@@ -112,21 +112,35 @@ def main():
             report['dashboardShellAndAsset'] = 'PASS'
             report['apiAuthenticationAndRequestId'] = 'PASS'
             if args.sync:
-                code, _, body = request('/api/v1/sync/github', method='POST')
-                assert code == 202
-                run_id = json.loads(body)['id']
-                for _ in range(120):
-                    code, _, body = request('/api/v1/sync/runs/' + run_id)
-                    job = json.loads(body)
-                    if job['status'] in ('SUCCESS', 'FAILED'):
-                        break
-                    time.sleep(1)
-                assert job['status'] == 'SUCCESS', 'GitHub sync failed'
+                def sync_github():
+                    code, _, body = request('/api/v1/sync/github', method='POST')
+                    assert code == 202
+                    run_id = json.loads(body)['id']
+                    for _ in range(120):
+                        code, _, body = request('/api/v1/sync/runs/' + run_id)
+                        job = json.loads(body)
+                        if job['status'] in ('SUCCESS', 'FAILED'):
+                            break
+                        time.sleep(1)
+                    assert job['status'] == 'SUCCESS', 'GitHub sync failed'
+                    return job
+
+                job = sync_github()
                 report['githubSync'] = {'status': job['status'], 'repositoriesProcessed': job['repositoriesProcessed']}
+                before_commits = database.sql('SELECT count(*) FROM github_commits;')
+                sync_github()
+                assert database.sql('SELECT count(*) FROM github_commits;') == before_commits
+                report['githubRepeatSyncNoDuplicates'] = True
                 code, _, body = request('/api/v1/notion/sync?full=true', method='POST')
                 notion = json.loads(body)
                 assert code == 200 and notion['status'] == 'SUCCESS', 'Notion sync failed'
                 report['notionSync'] = {'status': notion['status'], 'tasksProcessed': notion['tasksProcessed']}
+                before_tasks = database.sql('SELECT count(*) FROM notion_tasks;')
+                code, _, body = request('/api/v1/notion/sync?full=true', method='POST')
+                assert code == 200 and json.loads(body)['status'] == 'SUCCESS'
+                assert database.sql('SELECT count(*) FROM notion_tasks;') == before_tasks
+                report['notionRepeatSyncNoDuplicates'] = True
+                report['notionDatePresent'] = int(database.sql('SELECT count(*) FROM notion_tasks WHERE due_start IS NOT NULL;')) > 0
                 if args.expected_commit:
                     if not re.fullmatch(r'[0-9a-f]{40}', args.expected_commit):
                         raise ValueError('Expected commit must be a full lowercase SHA')

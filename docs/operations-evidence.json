@@ -1,0 +1,85 @@
+{
+  "checkedAtUtc": "2026-11-05T04:34:43.227196+00:00",
+  "scope": "local HTTPS, isolated database; not a public deployment",
+  "databaseAndApiPortsPublished": false,
+  "certificateVerification": true,
+  "realUpstreamSyncRequested": true,
+  "restoredData": {
+    "restore": "PASS",
+    "sourceFingerprintsMatch": true,
+    "tables": {
+      "flyway_schema_history": 2,
+      "github_commits": 2,
+      "github_repositories": 3,
+      "notion_sync_runs": 28,
+      "notion_sync_states": 1,
+      "notion_tasks": 6,
+      "sync_runs": 3,
+      "sync_states": 3
+    }
+  },
+  "httpToHttpsRedirect": "PASS",
+  "httpsHealth": "UP",
+  "dashboardShellAndAsset": "PASS",
+  "apiAuthenticationAndRequestId": "PASS",
+  "githubSync": {
+    "status": "SUCCESS",
+    "repositoriesProcessed": 3
+  },
+  "githubRepeatSyncNoDuplicates": true,
+  "notionSync": {
+    "status": "SUCCESS",
+    "tasksProcessed": 6
+  },
+  "notionRepeatSyncNoDuplicates": true,
+  "notionDatePresent": true,
+  "publishedCommitImported": true,
+  "overview": {
+    "repositories": 3,
+    "activeTasks": 6
+  },
+  "result": "PASS",
+  "recordedAtUtc": "2026-11-05T04:36:28.796427+00:00",
+  "version": "0.1.0",
+  "javaTests": {
+    "surefire-reports": {
+      "tests": 95,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "failsafe-reports": {
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "clientTests": {
+    "tests": 11,
+    "failures": 0,
+    "skipped": 0
+  },
+  "backupGuards": {
+    "checksumRejection": "PASS",
+    "activeDatabaseGuard": "PASS",
+    "freshDatabaseRecovery": "PASS",
+    "existingDatabaseGuard": "PASS",
+    "sourceUnchanged": true
+  },
+  "githubCI": {
+    "commit": "dcc24841e08721600d830f89f9814b3fc8a7fdad",
+    "url": "https://github.com/NgocHien307/personalhub-api/actions/runs/41968644240",
+    "conclusion": "success",
+    "jobs": [
+      "unit-tests",
+      "integration-tests",
+      "dashboard-tests",
+      "operations-tests"
+    ]
+  },
+  "publicDeployment": {
+    "completed": false,
+    "reason": "User has no server or domain yet"
+  }
+}
