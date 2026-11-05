@@ -13,7 +13,7 @@ def package_source(root, filename):
         '.dockerignore', '.env.example', '.gitignore', 'Dockerfile', 'README.md', 'compose.yaml',
         'compose.production.yaml', 'pom.xml',
         'postman/PersonalHub.postman_collection.json', 'postman/PersonalHub.local.example.postman_environment.json')]
-    for folder in ('src', 'docs', '.github', 'scripts', 'deploy'):
+    for folder in ('src', 'docs', '.github/workflows', 'scripts', 'deploy'):
         files.extend(path for path in (root / folder).rglob('*')
                      if path.is_file() and '__pycache__' not in path.parts)
     files = sorted(set(files), key=lambda path: path.relative_to(root).as_posix())

@@ -6,6 +6,8 @@ Source có GitHub MVP, Notion Integration, recovery GitHub/Notion, API tổng qu
 
 [Xác minh mới nhất: dashboard](DASHBOARD_UI_VERIFICATION.md) · [Bằng chứng mới](dashboard-ui-evidence.json) · [Mở dashboard](DASHBOARD_UI_VI.md) · [Checklist Notion/GitHub](checklists/PERSONALHUB_LIVE_CHECKLIST_VI.md)
 
+Mốc vận hành tiếp theo ngày 05/11/2026: xem [backup/restore, HTTPS và phát hành](OPERATIONS_VERIFICATION.md) cùng [hướng dẫn server](OPERATIONS_VI.md). Báo cáo dưới đây lưu bằng chứng dashboard ngày 04/11; trạng thái hạ tầng mới được ghi riêng để không lẫn kiểm thử local với triển khai Internet.
+
 Các bài kiểm tra dữ liệu thật đã hoàn tất trước mốc hiện tại:
 
 - **GitHub: 4/4 PASS**, gồm tạo commit trên repo public của owner, kiểm tra dữ liệu trong PostgreSQL và sync lặp. [Báo cáo GitHub](GITHUB_MVP_VERIFICATION.md).
