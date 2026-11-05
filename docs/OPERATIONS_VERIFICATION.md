@@ -12,6 +12,12 @@ PASS tại localhost: chạy bộ Compose production với DB restore riêng, Po
 
 Chưa triển khai Internet: người dùng chưa có server và tên miền. Chưa kiểm chứng DNS, ACME công khai, lịch backup trên server hoặc lưu backup ngoài máy. Có cấu hình/hướng dẫn để thực hiện khi đã có hạ tầng.
 
+## Nghiệm thu upstream thật qua HTTPS local
+
+PASS: GitHub sync hai lần đều SUCCESS, xử lý 3 repository; số commit sau lượt hai không tăng. Commit công bố source `dcc24841e08721600d830f89f9814b3fc8a7fdad` đã được nhập vào PostgreSQL test. Notion full sync hai lần SUCCESS, mỗi lượt 6 task; số task giữ nguyên, có dữ liệu Date. Dashboard overview qua HTTPS trả 3 repository/6 task. Các POST chỉ cập nhật database test; không tạo/sửa task Notion hoặc commit GitHub trong bài nghiệm thu này.
+
 ## GitHub/release
 
-Source và lịch sử remote đã được kiểm tra. Kết quả CI/release và lượt sync thật qua HTTPS local sẽ được ghi vào báo cáo bàn giao sau khi hoàn tất publish. Không coi workflow đã viết là một lượt CI đã chạy thành công.
+Source đã đưa vào main qua [PR #1](https://github.com/NgocHien307/personalhub-api/pull/1), giữ lịch sử ban đầu. [CI trên main dcc2484](https://github.com/NgocHien307/personalhub-api/actions/runs/41968644240) PASS cả 4 job: unit-tests, integration-tests, dashboard-tests và operations-tests. Các lượt CI dùng Testcontainers thật; 95 unit + 22 integration tests Java và 11 client tests PASS. GitGuardian trên PR cũng PASS; package scan local không tìm thấy giá trị secrets hiện có trong `.env` hoặc credential-pattern.
+
+Phiên bản bàn giao 0.1.0; [trang release v0.1.0](https://github.com/NgocHien307/personalhub-api/releases/tag/v0.1.0) là nơi kiểm tra trạng thái công bố và tải source ZIP/SHA-256. Release chỉ được tạo sau CI của thay đổi cuối cùng. Xem bằng chứng máy đọc được trong [operations-evidence.json](operations-evidence.json).
