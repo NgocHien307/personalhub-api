@@ -4,6 +4,7 @@ import com.personalhub.github.application.GitHubPersistenceService;
 import com.personalhub.github.infrastructure.dto.GitHubCommitDto;
 import com.personalhub.github.infrastructure.dto.GitHubRepoDto;
 import com.personalhub.github.repository.GitHubCommitJpaRepository;
+import com.personalhub.github.repository.GitHubRepositoryJpaRepository;
 import com.personalhub.github.repository.SyncStateJpaRepository;
 import java.time.Instant;
 import java.util.List;
@@ -12,29 +13,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.postgresql.PostgreSQLContainer;
+import com.personalhub.support.PostgresTestDatabase;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Testcontainers
 @SpringBootTest(properties = {"app.security.api-key=integration-test-api-key-value", "app.github.username=demo",
         "app.sync.enabled=false"})
 class GitHubPersistenceIT {
-    @Container
-    static PostgreSQLContainer db = new PostgreSQLContainer("postgres:17-alpine");
-
     @DynamicPropertySource
     static void databaseProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", db::getJdbcUrl);
-        registry.add("spring.datasource.username", db::getUsername);
-        registry.add("spring.datasource.password", db::getPassword);
+        PostgresTestDatabase.configure(registry);
     }
 
     @Autowired GitHubPersistenceService persistence;
     @Autowired GitHubCommitJpaRepository commits;
     @Autowired SyncStateJpaRepository states;
+    @Autowired GitHubRepositoryJpaRepository repositories;
 
     @Test
     void twiceSyncingSameCommitDoesNotDuplicateRows() {
@@ -50,5 +45,27 @@ class GitHubPersistenceIT {
         assertThat(commits.count()).isEqualTo(1);
         assertThat(states.findById(102L)).isPresent()
                 .get().extracting(s -> s.getLastSuccessAt()).isEqualTo(second);
+    }
+
+    @Test
+    void failedRepositoryTransactionKeepsPreviousDataAndCheckpoint() {
+        long id = 909101L;
+        var repo = new GitHubRepoDto(id, "safe", "demo/safe", "https://github.com/demo/safe",
+                "main", false, new GitHubRepoDto.GitHubOwnerDto("demo"));
+        var renamed = new GitHubRepoDto(id, "changed", "demo/changed", "https://github.com/demo/changed",
+                "main", false, new GitHubRepoDto.GitHubOwnerDto("demo"));
+        Instant previous = Instant.parse("2026-11-03T00:00:00Z");
+        persistence.persist(repo, List.of(), previous);
+        try {
+            var invalid = new GitHubCommitDto("invalid", null, null);
+            assertThatThrownBy(() -> persistence.persist(renamed, List.of(invalid), previous.plusSeconds(60)))
+                    .isInstanceOf(IllegalArgumentException.class);
+            assertThat(repositories.findById(id).orElseThrow().getName()).isEqualTo("safe");
+            assertThat(states.findById(id).orElseThrow().getLastSuccessAt()).isEqualTo(previous);
+            assertThat(commits.findAll()).noneMatch(commit -> commit.getId().getRepositoryId() == id);
+        } finally {
+            states.deleteById(id);
+            repositories.deleteById(id);
+        }
     }
 }

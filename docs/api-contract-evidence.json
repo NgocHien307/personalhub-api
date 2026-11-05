@@ -1,0 +1,51 @@
+{
+  "checkedAtUtc": "2026-11-03T12:58:59.7068410+00:00",
+  "environment": {
+    "database": "Disposable PostgreSQL 17 Docker container, selected through IT_DB_URL",
+    "maven": "3.9.16",
+    "postgres": "17.11",
+    "springBoot": "4.1.2",
+    "java": "21.0.12.1",
+    "productionDatabaseUsedByAutomatedTests": false
+  },
+  "automatedTests": [
+    {
+      "suite": "target/api-java21/surefire-reports",
+      "tests": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "target/api-java21/failsafe-reports",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "schemas": {
+    "documentedOperations": 13,
+    "openapiOfficialSchema": "PASS",
+    "openapi": "3.1.0",
+    "postmanCollectionOfficialSchema": "PASS",
+    "postmanDefinedRequests": 21
+  },
+  "postman": {
+    "assertions": 32,
+    "failures": 0,
+    "skippedRequests": 4,
+    "runner": "Newman 6.2.3",
+    "runSync": false,
+    "postRequestsExecuted": 0,
+    "httpRequests": 17
+  },
+  "localDeployment": {
+    "openApiAuthentication": "PASS",
+    "health": "UP",
+    "dockerComposeBuild": "PASS",
+    "errorResponses": "PASS"
+  },
+  "secretsIncluded": false,
+  "taskContentsIncluded": false
+}

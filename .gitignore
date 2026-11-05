@@ -3,6 +3,15 @@
 .idea/
 .vscode/
 target/
+dist/
+.postman/
+backups/
+*.dump
+*.dump.sha256
+*.dump.manifest.json
+__pycache__/
+postman/*.local.json
+postman/*.local.postman_environment.json
 *.iml
 .DS_Store
 *.log

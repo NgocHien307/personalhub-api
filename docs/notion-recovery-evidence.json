@@ -1,0 +1,92 @@
+{
+  "checkedAtUtc": "2026-11-04T06:45:05.6541803+00:00",
+  "environment": {
+    "springBoot": "4.1.2",
+    "java": "21.0.12.1",
+    "maven": "3.9.16",
+    "postgres": "17.11",
+    "automatedDatabase": "Disposable Docker container selected through IT_DB_URL",
+    "productionDatabaseUsedByAutomatedTests": false
+  },
+  "build": "PASS",
+  "automatedTests": [
+    {
+      "suite": "surefire-reports",
+      "tests": 83,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "failsafe-reports",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "recoveryVerified": [
+    "Disabled integration does not access DB or upstream",
+    "Configured-source RUNNING history recovered at bean startup",
+    "Terminal history, other sources, GitHub, tasks and checkpoints preserved",
+    "Live lock owner is never marked failed",
+    "Deferred recovery runs after lock release",
+    "RUNNING history visible while upstream call executes",
+    "Recovery remains committed after subsequent sync failure"
+  ],
+  "forcedLiveProcessCrash": false,
+  "localDeployment": {
+    "dockerComposeBuild": "PASS",
+    "checkedAtUtc": "2026-11-04T06:45:05.6541803+00:00",
+    "health": "UP",
+    "notionFullSync": {
+      "httpStatus": 200,
+      "runId": "75a25ff4-edd3-4b1b-b326-14ca6b46a52f",
+      "status": "SUCCESS",
+      "tasksProcessed": 6,
+      "historyStatus": "SUCCESS"
+    },
+    "before": {
+      "repositories": 3,
+      "commits": 2,
+      "githubActiveRuns": 0,
+      "notionTasks": 6,
+      "notionActiveRuns": 0
+    },
+    "after": {
+      "repositories": 3,
+      "commits": 2,
+      "githubActiveRuns": 0,
+      "notionTasks": 6,
+      "notionActiveRuns": 0
+    },
+    "gitHubCountsPreserved": true,
+    "upstreamWritesPerformed": false,
+    "secretsIncluded": false,
+    "taskContentsIncluded": false
+  },
+  "postman": {
+    "runner": "Newman 6.2.3",
+    "runSync": false,
+    "httpRequests": 18,
+    "failedRequests": 0,
+    "assertions": 33,
+    "failedAssertions": 0,
+    "failureCount": 0,
+    "postRequestsExecuted": 0,
+    "failures": []
+  },
+  "manualChecklist": {
+    "tasks": 12,
+    "csvMarkdownCodesMatch": true,
+    "userResultsRecorded": false,
+    "externalIssueOrNotionTasksCreatedByAgent": false
+  },
+  "limitations": [
+    "One API instance per database due to GitHub in-memory guard",
+    "Notion history transaction needs at least two pooled DB connections",
+    "Recovery runs at startup or before a new sync, not a separate scan"
+  ],
+  "secretsIncluded": false,
+  "taskContentsIncluded": false
+}

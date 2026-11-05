@@ -1,0 +1,1784 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PersonalHub API",
+    "version": "0.1.0",
+    "description": "Single-user GitHub and Notion read integration. Send the PersonalHub API key, not upstream tokens. Errors use RFC 9457 application/problem+json. Dates are ISO-8601; pagination returns arrays."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Docker/IDE"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health"
+    },
+    {
+      "name": "Documentation"
+    },
+    {
+      "name": "Dashboard"
+    },
+    {
+      "name": "GitHub"
+    },
+    {
+      "name": "GitHub sync"
+    },
+    {
+      "name": "Notion"
+    }
+  ],
+  "paths": {
+    "/actuator/health": {
+      "get": {
+        "operationId": "health",
+        "tags": [
+          "Health"
+        ],
+        "summary": "Application and database health",
+        "description": "",
+        "parameters": [
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Health check reports DOWN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/openapi.json": {
+      "get": {
+        "operationId": "getOpenApi",
+        "tags": [
+          "Documentation"
+        ],
+        "summary": "Download this OpenAPI contract",
+        "description": "",
+        "parameters": [
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "openapi",
+                    "info",
+                    "paths"
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/overview": {
+      "get": {
+        "operationId": "getDashboardOverview",
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Read the cached GitHub and Notion overview",
+        "description": "Reads PostgreSQL only, using a repeatable-read transaction. Never calls upstream or triggers sync. Notion disabled returns enabled=false, zero counts and null checkpoint/history. Status counts exclude archived tasks and preserve null/unassigned status. Latest runs can be FAILED; generatedAt is response generation time, not source freshness.",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "description": "Rolling GitHub commit window; Notion counts cover the whole configured source cache.",
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "minimum": 1,
+              "maximum": 365
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardOverview"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          }
+        }
+      }
+    },
+    "/api/v1/github/repositories": {
+      "get": {
+        "operationId": "listGitHubRepositories",
+        "tags": [
+          "GitHub"
+        ],
+        "summary": "List cached repositories",
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GitHubRepository"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          }
+        }
+      }
+    },
+    "/api/v1/github/commits": {
+      "get": {
+        "operationId": "listGitHubCommits",
+        "tags": [
+          "GitHub"
+        ],
+        "summary": "List cached commits",
+        "description": "",
+        "parameters": [
+          {
+            "name": "repoId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Zero-based page; response is a JSON array.",
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 100000
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GitHubCommit"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          }
+        }
+      }
+    },
+    "/api/v1/github/stats": {
+      "get": {
+        "operationId": "getGitHubStats",
+        "tags": [
+          "GitHub"
+        ],
+        "summary": "UTC GitHub activity statistics",
+        "description": "",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "minimum": 1,
+              "maximum": 365
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitHubStats"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          }
+        }
+      }
+    },
+    "/api/v1/sync/github": {
+      "post": {
+        "operationId": "triggerGitHubSync",
+        "tags": [
+          "GitHub sync"
+        ],
+        "summary": "Queue an asynchronous GitHub sync",
+        "description": "The initial status can already be RUNNING or SUCCESS due to asynchronous execution. A later failed job is still returned by GET with HTTP 200 and status FAILED. Concurrency protection is per application instance.",
+        "parameters": [
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted; poll Location until SUCCESS or FAILED",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitHubSyncRun"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "Relative URL of the sync run",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          }
+        }
+      }
+    },
+    "/api/v1/sync/runs": {
+      "get": {
+        "operationId": "listGitHubSyncRuns",
+        "tags": [
+          "GitHub sync"
+        ],
+        "summary": "List recent GitHub sync runs",
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GitHubSyncRun"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          }
+        }
+      }
+    },
+    "/api/v1/sync/runs/{id}": {
+      "get": {
+        "operationId": "getGitHubSyncRun",
+        "tags": [
+          "GitHub sync"
+        ],
+        "summary": "Read a GitHub sync run",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitHubSyncRun"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/v1/notion/tasks": {
+      "get": {
+        "operationId": "listNotionTasks",
+        "tags": [
+          "Notion"
+        ],
+        "summary": "List cached tasks in the configured data source",
+        "description": "",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Exact status name."
+          },
+          {
+            "name": "includeArchived",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 100000
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotionTask"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        }
+      }
+    },
+    "/api/v1/notion/tasks/{id}": {
+      "get": {
+        "operationId": "getNotionTask",
+        "tags": [
+          "Notion"
+        ],
+        "summary": "Read a cached task by page UUID",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotionTask"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/v1/notion/sync": {
+      "post": {
+        "operationId": "triggerNotionSync",
+        "tags": [
+          "Notion"
+        ],
+        "summary": "Run a synchronous Notion sync",
+        "description": "Runs inside the request. A failure returns ApiProblem with syncRunId, not a NotionSyncRun body. Read /api/v1/notion/sync-runs/{syncRunId} for the persisted FAILED run and safe errorMessage. PostgreSQL advisory locking prevents concurrent syncs for the same data source.",
+        "parameters": [
+          {
+            "name": "full",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "Read all accessible pages, ignoring the checkpoint. Does not reconcile deleted/inaccessible pages."
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Completed SUCCESS run",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotionSyncRun"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "502": {
+            "$ref": "#/components/responses/502"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          }
+        }
+      }
+    },
+    "/api/v1/notion/sync-runs": {
+      "get": {
+        "operationId": "listNotionSyncRuns",
+        "tags": [
+          "Notion"
+        ],
+        "summary": "List recent Notion sync runs",
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotionSyncRun"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        }
+      }
+    },
+    "/api/v1/notion/sync-runs/{id}": {
+      "get": {
+        "operationId": "getNotionSyncRun",
+        "tags": [
+          "Notion"
+        ],
+        "summary": "Read a Notion sync run",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional canonical UUID. Uppercase is normalized; missing or invalid values are replaced with a generated UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotionSyncRun"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-ID": {
+                "description": "Canonical UUID for correlating this HTTP request with application logs.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "405": {
+            "$ref": "#/components/responses/405"
+          },
+          "406": {
+            "$ref": "#/components/responses/406"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    },
+    "schemas": {
+      "ApiProblem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri-reference",
+            "const": "about:blank"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": 400,
+            "maximum": 599
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string",
+            "format": "uri-reference"
+          },
+          "code": {
+            "type": "string",
+            "description": "Stable category: INVALID_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, METHOD_NOT_ALLOWED, NOT_ACCEPTABLE, SYNC_CONFLICT, UNSUPPORTED_MEDIA_TYPE, INTERNAL_ERROR, UPSTREAM_ERROR, INTEGRATION_UNAVAILABLE; other statuses use HTTP_<status>."
+          },
+          "syncRunId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "title",
+          "status",
+          "detail",
+          "instance",
+          "code"
+        ]
+      },
+      "GitHubRepository": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "htmlUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "defaultBranch": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "archived": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "fullName",
+          "htmlUrl",
+          "defaultBranch",
+          "archived"
+        ]
+      },
+      "GitHubCommit": {
+        "type": "object",
+        "properties": {
+          "repositoryId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sha": {
+            "type": "string"
+          },
+          "authorLogin": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "committedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "repositoryId",
+          "sha",
+          "authorLogin",
+          "message",
+          "committedAt"
+        ]
+      },
+      "GitHubStats": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "since": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "trackedRepositories": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "recordedCommits": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "authoredCommits": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "activeDaysUtc": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "username",
+          "since",
+          "trackedRepositories",
+          "recordedCommits",
+          "authoredCommits",
+          "activeDaysUtc"
+        ]
+      },
+      "GitHubSyncRun": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "RUNNING",
+              "SUCCESS",
+              "FAILED"
+            ]
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "repositoriesProcessed": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "commitsFetched": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "errorMessage": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "startedAt",
+          "finishedAt",
+          "repositoriesProcessed",
+          "commitsFetched",
+          "errorMessage"
+        ]
+      },
+      "NotionTask": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dataSourceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dueStart": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Original Notion date-only or datetime string; no UTC conversion."
+          },
+          "dueEnd": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dueTimeZone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "lastEditedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "archived": {
+            "type": "boolean"
+          },
+          "syncedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "dataSourceId",
+          "title",
+          "status",
+          "dueStart",
+          "dueEnd",
+          "dueTimeZone",
+          "url",
+          "lastEditedAt",
+          "archived",
+          "syncedAt"
+        ]
+      },
+      "NotionSyncRun": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dataSourceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "RUNNING",
+              "SUCCESS",
+              "FAILED",
+              "CONFLICT"
+            ]
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "tasksProcessed": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "errorMessage": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "dataSourceId",
+          "status",
+          "startedAt",
+          "finishedAt",
+          "tasksProcessed",
+          "errorMessage"
+        ]
+      },
+      "Health": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "additionalProperties": true
+      },
+      "NotionStatusCount": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "status",
+          "count"
+        ]
+      },
+      "NotionOverview": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "activeTasks": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "archivedTasks": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "tasksByStatus": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotionStatusCount"
+            },
+            "description": "Active tasks only, exact status labels; null is unassigned."
+          },
+          "lastCheckpointAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Watermark from the last successful Notion sync, not completion time."
+          }
+        },
+        "required": [
+          "enabled",
+          "activeTasks",
+          "archivedTasks",
+          "tasksByStatus",
+          "lastCheckpointAt"
+        ]
+      },
+      "LatestSyncs": {
+        "type": "object",
+        "properties": {
+          "github": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GitHubSyncRun"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NotionSyncRun"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "github",
+          "notion"
+        ]
+      },
+      "DashboardOverview": {
+        "type": "object",
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 365
+          },
+          "github": {
+            "$ref": "#/components/schemas/GitHubStats"
+          },
+          "notion": {
+            "$ref": "#/components/schemas/NotionOverview"
+          },
+          "latestSyncs": {
+            "$ref": "#/components/schemas/LatestSyncs"
+          }
+        },
+        "required": [
+          "generatedAt",
+          "days",
+          "github",
+          "notion",
+          "latestSyncs"
+        ]
+      }
+    },
+    "responses": {
+      "400": {
+        "description": "Invalid parameter or pagination",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-ID": {
+            "description": "Canonical UUID for correlating this HTTP request with application logs.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Missing or invalid X-API-Key",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-ID": {
+            "description": "Canonical UUID for correlating this HTTP request with application logs.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Access denied",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-ID": {
+            "description": "Canonical UUID for correlating this HTTP request with application logs.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Resource not found in the current source",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-ID": {
+            "description": "Canonical UUID for correlating this HTTP request with application logs.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "405": {
+        "description": "Method not allowed",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-ID": {
+            "description": "Canonical UUID for correlating this HTTP request with application logs.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "406": {
+        "description": "Response format not available",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-ID": {
+            "description": "Canonical UUID for correlating this HTTP request with application logs.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "409": {
+        "description": "A sync for this source is already running",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-ID": {
+            "description": "Canonical UUID for correlating this HTTP request with application logs.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "415": {
+        "description": "Unsupported content type",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-ID": {
+            "description": "Canonical UUID for correlating this HTTP request with application logs.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Unexpected error; internal details are not exposed",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-ID": {
+            "description": "Canonical UUID for correlating this HTTP request with application logs.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "502": {
+        "description": "Notion sync failed. syncRunId identifies the persisted FAILED run.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiProblem"
+            },
+            "example": {
+              "type": "about:blank",
+              "title": "Bad Gateway",
+              "status": 502,
+              "detail": "Sync failed; inspect the referenced sync run for details.",
+              "instance": "/api/v1/notion/sync",
+              "code": "UPSTREAM_ERROR",
+              "syncRunId": "00000000-0000-0000-0000-000000000001"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-ID": {
+            "description": "Canonical UUID for correlating this HTTP request with application logs.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "503": {
+        "description": "Notion integration is disabled or unavailable",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-ID": {
+            "description": "Canonical UUID for correlating this HTTP request with application logs.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      }
+    }
+  }
+}

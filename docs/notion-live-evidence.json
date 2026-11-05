@@ -1,0 +1,136 @@
+{
+  "checkedAtUtc": "2026-11-03T19:01:43.210069+07:00",
+  "environment": "Running Docker application, Spring Boot 4.1.2, Java 21, PostgreSQL 17.11",
+  "propertyMapping": {
+    "status": "Status",
+    "title": "Log title",
+    "due": "Date"
+  },
+  "secretsIncluded": false,
+  "taskContentsIncluded": false,
+  "checks": [
+    {
+      "httpStatus": 200,
+      "result": "PASS",
+      "name": "Manual full sync",
+      "tasksProcessed": 5
+    },
+    {
+      "comparedFields": [
+        "id",
+        "title",
+        "status",
+        "dueStart",
+        "dueEnd",
+        "dueTimeZone",
+        "lastEditedAt",
+        "archived"
+      ],
+      "result": "PASS",
+      "name": "Fields in PostgreSQL match live Notion",
+      "rowCount": 5
+    },
+    {
+      "name": "Repeated full sync with unchanged source",
+      "result": "PASS",
+      "sourceUnchanged": true,
+      "checkpointAdvanced": true,
+      "rowsBefore": 5,
+      "rowsAfter": 5,
+      "storedDataUnchanged": true
+    },
+    {
+      "result": "PASS",
+      "name": "Scheduled sync",
+      "evidence": {
+        "initiatedBy": "NotionSyncScheduler",
+        "runId": "6eaaf671-0de4-45a0-b0c5-aec63ec9a9b7",
+        "finishedAt": "2026-11-03T12:03:15.129979Z",
+        "startedAt": "2026-11-03T12:03:14.406159Z",
+        "status": "SUCCESS",
+        "logAndPersistedRunMatch": true,
+        "tasksProcessed": 0,
+        "testDelayMilliseconds": 60000
+      }
+    },
+    {
+      "result": "PASS",
+      "name": "Edit an existing record in Notion",
+      "evidence": {
+        "comparedWithSavedBaseline": true,
+        "alreadyMatchedBeforeManualSync": false,
+        "restResponseMatches": true,
+        "changedFieldsObservedAgainstOldDatabase": [
+          "dueStart",
+          "status"
+        ],
+        "mappedFieldsChangedIgnoringEditTimestamp": true,
+        "changedExistingRecords": 1,
+        "sameIdsPreserved": true,
+        "allCurrentFieldsMatchLiveNotion": true,
+        "incrementalRunId": "6e9e440b-5672-4350-a47c-9a8426f64199"
+      }
+    },
+    {
+      "result": "PASS",
+      "name": "Create a new record in Notion",
+      "evidence": {
+        "newRecordsStoredExactlyOnce": true,
+        "newRecords": 1,
+        "restResponseMatches": true,
+        "replayRunId": "b13c095d-613e-4eee-9c04-94731fb40688",
+        "newRecordsHaveStatusAndDate": true,
+        "rowsAfterReplay": 6,
+        "baselineRows": 5,
+        "rowsBeforeReplay": 6,
+        "finalRows": 6,
+        "contentUnchangedAfterReplay": true
+      }
+    }
+  ],
+  "runs": [
+    {
+      "id": "a907acfc-0940-4ea0-9cf4-7c7d9356cd9f",
+      "status": "SUCCESS",
+      "tasksProcessed": 5,
+      "startedAt": "2026-11-03T12:01:40.336474Z",
+      "finishedAt": "2026-11-03T12:01:41.103238Z"
+    },
+    {
+      "id": "8d67c287-a3a2-4805-ba6f-e89804e640aa",
+      "status": "SUCCESS",
+      "tasksProcessed": 5,
+      "startedAt": "2026-11-03T12:01:41.73282Z",
+      "finishedAt": "2026-11-03T12:01:42.117669Z"
+    },
+    {
+      "id": "6e9e440b-5672-4350-a47c-9a8426f64199",
+      "status": "SUCCESS",
+      "tasksProcessed": 2,
+      "startedAt": "2026-11-03T12:35:51.480687Z",
+      "finishedAt": "2026-11-03T12:35:51.971965Z"
+    },
+    {
+      "id": "b13c095d-613e-4eee-9c04-94731fb40688",
+      "status": "SUCCESS",
+      "tasksProcessed": 6,
+      "startedAt": "2026-11-03T12:35:52.601008Z",
+      "finishedAt": "2026-11-03T12:35:52.994466Z"
+    }
+  ],
+  "finalSchedulerConfiguration": {
+    "containerConfigurationVerified": true,
+    "health": "UP",
+    "fixedDelayMilliseconds": 1800000,
+    "enabled": true
+  },
+  "completedAtUtc": "2026-11-03T12:35:54.1126314+00:00",
+  "liveChangesSummary": {
+    "secretsIncluded": false,
+    "baselineRows": 5,
+    "currentRows": 6,
+    "newRecords": 1,
+    "changedExistingRecords": 1,
+    "taskContentsIncluded": false
+  }
+}
