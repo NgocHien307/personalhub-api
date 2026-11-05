@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="light" />
+    <title>PersonalHub · Không gian của bạn</title>
+    <link rel="stylesheet" href="/dashboard/dashboard.css" />
+    <script type="module" src="/dashboard/app.mjs"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Đến nội dung chính</a>
+    <aside class="sidebar" aria-label="Không gian PersonalHub">
+      <a class="brand" href="#overview" aria-label="PersonalHub, tổng quan"
+        ><span class="brand-mark">p<span>h</span></span
+        ><span>personalhub<span class="brand-dot">.</span></span></a
+      >
+      <div class="workspace-label">KHÔNG GIAN CÁ NHÂN</div>
+      <nav class="navigation" aria-label="Điều hướng chính">
+        <a href="#overview" data-nav="overview" aria-current="page"
+          ><svg aria-hidden="true">
+            <use href="/dashboard/icons.svg#overview" /></svg
+          ><span>Tổng quan</span></a
+        >
+        <a href="#github" data-nav="github"
+          ><svg aria-hidden="true"><use href="/dashboard/icons.svg#code" /></svg
+          ><span>GitHub</span></a
+        >
+        <a href="#notion" data-nav="notion"
+          ><svg aria-hidden="true">
+            <use href="/dashboard/icons.svg#tasks" /></svg
+          ><span>Notion</span></a
+        >
+        <a href="#sync" data-nav="sync"
+          ><svg aria-hidden="true"><use href="/dashboard/icons.svg#sync" /></svg
+          ><span>Đồng bộ</span></a
+        >
+      </nav>
+      <div class="sidebar-note">
+        <div class="note-symbol">↗</div>
+        <strong>Nhìn lại để tiến xa hơn.</strong>
+        <p>Những việc nhỏ hôm nay, một bức tranh rõ ràng hơn ngày mai.</p>
+      </div>
+      <div class="sidebar-footer">
+        <span class="connection-dot" id="connection-dot"></span
+        ><span id="connection-label">Chưa kết nối</span
+        ><button
+          id="disconnect"
+          class="icon-button"
+          aria-label="Ngắt kết nối và xóa dữ liệu khỏi tab"
+          hidden
+        >
+          <svg aria-hidden="true">
+            <use href="/dashboard/icons.svg#logout" />
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <main id="main" class="main" tabindex="-1">
+      <header class="topbar">
+        <span class="breadcrumb"
+          >Không gian cá nhân <span>/</span>
+          <strong id="breadcrumb-page">Tổng quan</strong></span
+        ><span class="topbar-time"
+          ><span class="live-dot"></span>Giờ Việt Nam</span
+        >
+      </header>
+      <div id="notice" class="notice" role="alert" hidden>
+        <div>
+          <strong id="notice-title"></strong>
+          <p id="notice-message"></p>
+          <code id="notice-reference" hidden></code>
+        </div>
+        <button
+          id="dismiss-notice"
+          class="icon-button"
+          aria-label="Đóng thông báo"
+        >
+          <svg aria-hidden="true">
+            <use href="/dashboard/icons.svg#close" />
+          </svg>
+        </button>
+      </div>
+
+      <section
+        id="connect-panel"
+        class="welcome"
+        aria-labelledby="welcome-heading"
+      >
+        <div class="welcome-copy">
+          <span class="eyebrow">CHÀO MỪNG ĐẾN PERSONALHUB</span>
+          <h1 id="welcome-heading">
+            Một nơi.<br />Mọi nhịp sống<span>.</span>
+          </h1>
+          <p>
+            Kết nối công việc, ghi lại tiến độ và nhìn thấy những gì bạn đang
+            xây dựng — trong một không gian của riêng mình.
+          </p>
+          <div class="welcome-sources">
+            <span
+              ><svg aria-hidden="true">
+                <use href="/dashboard/icons.svg#code" />
+              </svg>
+              GitHub</span
+            ><span class="source-plus">+</span
+            ><span
+              ><svg aria-hidden="true">
+                <use href="/dashboard/icons.svg#tasks" />
+              </svg>
+              Notion</span
+            >
+          </div>
+          <div class="welcome-art" aria-hidden="true">
+            <span class="art-orbit"></span><span class="art-orbit small"></span>
+            <div class="art-card">
+              <span>Những bước tiến của bạn</span>
+              <div class="art-bars">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <div class="art-card-line"></div>
+            </div>
+            <div class="art-check">
+              <svg><use href="/dashboard/icons.svg#check" /></svg>
+            </div>
+          </div>
+        </div>
+        <form id="connect-form" class="connect-card" autocomplete="off">
+          <div class="connect-icon">
+            <svg aria-hidden="true">
+              <use href="/dashboard/icons.svg#lock" />
+            </svg>
+          </div>
+          <h2>Mở không gian của bạn</h2>
+          <p>Dùng khóa truy cập PersonalHub để xem dữ liệu đã đồng bộ.</p>
+          <label for="api-key">Khóa truy cập</label
+          ><input
+            id="api-key"
+            type="password"
+            name="apiKey"
+            required
+            minlength="16"
+            maxlength="1024"
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="key-hint"
+            placeholder="Nhập PERSONALHUB_API_KEY"
+          /><small id="key-hint"
+            >Lấy giá trị PERSONALHUB_API_KEY trong file .env trên máy của
+            bạn.</small
+          ><button id="connect-button" class="button primary" type="submit">
+            Kết nối không gian
+            <svg aria-hidden="true">
+              <use href="/dashboard/icons.svg#arrow" />
+            </svg>
+          </button>
+          <p class="privacy-note">
+            Khóa chỉ được giữ trong bộ nhớ của tab. Tải lại trang hoặc ngắt kết
+            nối sẽ xóa khóa.
+          </p>
+        </form>
+      </section>
+
+      <div id="workspace" hidden>
+        <section class="page-heading">
+          <div>
+            <span class="eyebrow" id="page-eyebrow">BỨC TRANH CỦA BẠN</span>
+            <h1 id="page-title" tabindex="-1">
+              Mỗi ngày, một chút tiến bộ<span>.</span>
+            </h1>
+            <p id="page-description">
+              Công việc, ý tưởng và những dòng code — cùng ở đây.
+            </p>
+          </div>
+          <div class="heading-actions">
+            <button class="button secondary" id="refresh-button">
+              <svg aria-hidden="true">
+                <use href="/dashboard/icons.svg#sync" /></svg
+              >Làm mới</button
+            ><a class="button primary" href="#sync"
+              >Đồng bộ dữ liệu
+              <svg aria-hidden="true">
+                <use href="/dashboard/icons.svg#arrow" /></svg
+            ></a>
+          </div>
+        </section>
+        <div class="context-row">
+          <div class="range-control">
+            <label for="days">Thống kê GitHub</label
+            ><select id="days">
+              <option value="7">7 ngày qua</option>
+              <option value="30" selected>30 ngày qua</option>
+              <option value="90">90 ngày qua</option>
+              <option value="365">365 ngày qua</option>
+            </select>
+          </div>
+          <span class="updated-label" id="updated-label" role="status"
+            >Đang tải dữ liệu…</span
+          >
+        </div>
+
+        <section data-view="overview" aria-label="Tổng quan">
+          <div class="metrics">
+            <article class="metric-card">
+              <div class="metric-top">
+                <span>Repository</span
+                ><svg aria-hidden="true">
+                  <use href="/dashboard/icons.svg#branch" />
+                </svg>
+              </div>
+              <strong id="metric-repos">—</strong
+              ><span class="metric-note">Đang được theo dõi</span>
+            </article>
+            <article class="metric-card">
+              <div class="metric-top">
+                <span>Commit của bạn</span
+                ><svg aria-hidden="true">
+                  <use href="/dashboard/icons.svg#code" />
+                </svg>
+              </div>
+              <strong id="metric-commits">—</strong
+              ><span class="metric-note" id="metric-commits-note"
+                >Trong khoảng đã chọn</span
+              >
+            </article>
+            <article class="metric-card">
+              <div class="metric-top">
+                <span>Ngày hoạt động</span
+                ><svg aria-hidden="true">
+                  <use href="/dashboard/icons.svg#activity" />
+                </svg>
+              </div>
+              <strong id="metric-days">—</strong
+              ><span class="metric-note">Ngày có commit của bạn · UTC</span>
+            </article>
+            <article class="metric-card metric-highlight">
+              <div class="metric-top">
+                <span>Công việc Notion</span
+                ><svg aria-hidden="true">
+                  <use href="/dashboard/icons.svg#tasks" />
+                </svg>
+              </div>
+              <strong id="metric-tasks">—</strong
+              ><span class="metric-note" id="metric-tasks-note"
+                >Chưa lưu trữ</span
+              >
+            </article>
+          </div>
+          <div class="overview-grid">
+            <article class="panel">
+              <header class="panel-heading">
+                <div>
+                  <span class="eyebrow">NOTION</span>
+                  <h2>Công việc đang ở đâu?</h2>
+                </div>
+                <a class="text-link" href="#notion"
+                  >Xem tất cả
+                  <svg aria-hidden="true">
+                    <use href="/dashboard/icons.svg#arrow" /></svg
+                ></a>
+              </header>
+              <div class="chart-summary">
+                <strong id="chart-total">—</strong
+                ><span>công việc chưa lưu trữ</span>
+              </div>
+              <ul class="status-chart" id="status-chart"></ul>
+              <p class="panel-footnote" id="chart-note">
+                Trạng thái theo bảng Notion của bạn.
+              </p>
+            </article>
+            <article class="panel sources-panel">
+              <header class="panel-heading">
+                <div>
+                  <span class="eyebrow">KẾT NỐI</span>
+                  <h2>Nguồn dữ liệu</h2>
+                </div>
+                <span class="subtle-tag">Không gian riêng</span>
+              </header>
+              <div id="sources-list" class="sources-list"></div>
+              <div class="source-tip">
+                <svg aria-hidden="true">
+                  <use href="/dashboard/icons.svg#clock" />
+                </svg>
+                <p>
+                  Dữ liệu hiển thị là lần đồng bộ gần nhất. Bạn có thể đồng bộ
+                  để lấy những thay đổi mới.
+                </p>
+              </div>
+            </article>
+          </div>
+          <article class="panel activity-panel">
+            <header class="panel-heading">
+              <div>
+                <span class="eyebrow">GITHUB</span>
+                <h2>Những dòng code gần đây</h2>
+              </div>
+              <a class="text-link" href="#github"
+                >Xem GitHub
+                <svg aria-hidden="true">
+                  <use href="/dashboard/icons.svg#arrow" /></svg
+              ></a>
+            </header>
+            <div id="recent-commits"></div>
+          </article>
+        </section>
+
+        <section data-view="github" aria-label="GitHub" hidden>
+          <div class="section-heading">
+            <h2>Repository đang theo dõi</h2>
+            <span class="muted" id="repo-count"></span>
+          </div>
+          <div id="repository-list" class="repository-grid"></div>
+          <article class="panel">
+            <header class="panel-heading">
+              <div>
+                <span class="eyebrow">LỊCH SỬ CODE</span>
+                <h2>Commit đã đồng bộ</h2>
+              </div>
+              <div class="filter-field">
+                <label for="repo-filter">Repository</label
+                ><select id="repo-filter">
+                  <option value="">Tất cả repository</option>
+                </select>
+              </div>
+            </header>
+            <div id="commits-list"></div>
+            <footer class="pagination">
+              <span id="commits-page">Trang 1</span>
+              <div>
+                <button class="button secondary" id="commits-prev">
+                  Trang trước</button
+                ><button class="button secondary" id="commits-next">
+                  Trang sau
+                </button>
+              </div>
+            </footer>
+          </article>
+        </section>
+
+        <section data-view="notion" aria-label="Notion" hidden>
+          <article class="panel">
+            <header class="panel-heading">
+              <div>
+                <span class="eyebrow">NOTION</span>
+                <h2>Công việc của bạn</h2>
+              </div>
+              <div class="task-filters">
+                <div class="filter-field">
+                  <label for="status-filter">Trạng thái</label
+                  ><select id="status-filter">
+                    <option value="">Tất cả trạng thái</option>
+                  </select>
+                </div>
+                <label class="checkbox-label"
+                  ><input id="include-archived" type="checkbox" />Gồm đã lưu
+                  trữ</label
+                >
+              </div>
+            </header>
+            <div id="tasks-list"></div>
+            <footer class="pagination">
+              <span id="tasks-page">Trang 1</span>
+              <div>
+                <button class="button secondary" id="tasks-prev">
+                  Trang trước</button
+                ><button class="button secondary" id="tasks-next">
+                  Trang sau
+                </button>
+              </div>
+            </footer>
+          </article>
+        </section>
+
+        <section data-view="sync" aria-label="Đồng bộ dữ liệu" hidden>
+          <div class="sync-grid">
+            <article class="panel sync-card">
+              <div class="source-avatar">
+                <svg aria-hidden="true">
+                  <use href="/dashboard/icons.svg#code" />
+                </svg>
+              </div>
+              <h2>GitHub</h2>
+              <p>Lấy repository và commit mới từ tài khoản của bạn.</p>
+              <div id="github-sync-state"></div>
+              <button class="button primary" id="sync-github">
+                Đồng bộ GitHub
+              </button>
+            </article>
+            <article class="panel sync-card">
+              <div class="source-avatar notion-avatar">
+                <svg aria-hidden="true">
+                  <use href="/dashboard/icons.svg#tasks" />
+                </svg>
+              </div>
+              <h2>Notion</h2>
+              <p>Cập nhật công việc, trạng thái và ngày từ bảng đã kết nối.</p>
+              <div id="notion-sync-state"></div>
+              <label class="checkbox-label full-sync-label"
+                ><input id="notion-full" type="checkbox" />Đọc lại toàn bộ
+                bảng</label
+              ><button class="button primary" id="sync-notion">
+                Đồng bộ Notion
+              </button>
+            </article>
+          </div>
+          <article class="panel history-panel">
+            <header class="panel-heading">
+              <div>
+                <span class="eyebrow">THEO DÕI TIẾN ĐỘ</span>
+                <h2>Lịch sử đồng bộ</h2>
+              </div>
+              <div class="filter-field">
+                <label for="history-source">Nguồn</label
+                ><select id="history-source">
+                  <option value="github">GitHub</option>
+                  <option value="notion">Notion</option>
+                </select>
+              </div>
+            </header>
+            <div id="history-list"></div>
+            <p class="panel-footnote">
+              Hiển thị tối đa 20 lượt gần nhất của nguồn đang chọn. Số đã xử lý
+              có thể gồm dữ liệu đã tồn tại.
+            </p>
+          </article>
+        </section>
+        <footer class="page-footer">
+          <span>PersonalHub · Một chút rõ ràng cho mỗi ngày.</span
+          ><span>Ngày giờ hiển thị theo Việt Nam</span>
+        </footer>
+      </div>
+      <noscript
+        ><p class="notice">
+          Hãy bật JavaScript để sử dụng dashboard PersonalHub.
+        </p></noscript
+      >
+      <p class="sr-only" id="live-status" role="status" aria-live="polite"></p>
+    </main>
+  </body>
+</html>

@@ -3,6 +3,7 @@ package com.personalhub.sync.application;
 import com.personalhub.config.GitHubProperties;
 import com.personalhub.github.application.GitHubPersistenceService;
 import com.personalhub.github.infrastructure.GitHubApiClient;
+import com.personalhub.github.infrastructure.GitHubApiException;
 import com.personalhub.github.repository.SyncStateJpaRepository;
 import com.personalhub.sync.domain.SyncRunEntity;
 import com.personalhub.sync.repository.SyncRunJpaRepository;
@@ -59,14 +60,16 @@ public class GitHubSyncWorker {
             runs.saveAndFlush(run);
             log.info("GitHub sync {} completed: {} repos, {} fetched commits", id, processed, fetched);
         } catch (Exception ex) {
-            log.error("GitHub sync {} failed: {}", id, ex.getMessage());
+            String safeMessage = ex instanceof GitHubApiException ? ex.getMessage()
+                    : "GitHub sync failed; verify configuration and database";
+            log.error("GitHub sync {} failed ({}): {}", id, ex.getClass().getSimpleName(), safeMessage);
             try {
                 SyncRunEntity run = runs.findById(id).orElseThrow();
-                String safeMessage = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-                run.failed(processed, fetched, safeMessage.substring(0, Math.min(500, safeMessage.length())));
+                run.failed(processed, fetched, safeMessage);
                 runs.saveAndFlush(run);
             } catch (Exception statusError) {
-                log.error("Could not persist failed sync status for {}", id, statusError);
+                log.error("Could not persist failed sync status for {} ({})", id,
+                        statusError.getClass().getSimpleName());
             }
         } finally {
             busy.set(false);

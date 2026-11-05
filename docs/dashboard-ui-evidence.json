@@ -1,0 +1,168 @@
+{
+  "checkedAtUtc": "2026-11-04T11:39:49.2176515+00:00",
+  "environment": {
+    "springBoot": "4.1.2",
+    "java": "21.0.12.1",
+    "maven": "3.9.16",
+    "postgres": "17.11",
+    "node": "24.12.0",
+    "automatedDatabase": "Disposable Docker container through IT_DB_URL",
+    "productionDatabaseUsedByAutomatedTests": false
+  },
+  "build": "PASS",
+  "javaTests": [
+    {
+      "suite": "surefire-reports",
+      "tests": 95,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "failsafe-reports",
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "clientTests": {
+    "command": "node --test src/test/frontend/dashboard-core.test.mjs",
+    "tests": 11,
+    "failures": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "browserQa": {
+    "checkedAtUtc": "2026-11-04T11:37:51.621Z",
+    "fixtureData": true,
+    "realTokensUsed": false,
+    "checks": [
+      "Connected overview displays fixture totals and clears key input",
+      "GitHub pagination: page 2 shows remaining commit",
+      "GitHub repository filter resets pagination",
+      "Notion exact status filter and archived toggle: 6 to 8 matching rows",
+      "Reload returns to locked connection screen",
+      "375px mobile overview fits without horizontal overflow",
+      "Manual Notion sync renders processed count and refreshed data",
+      "Notion failure shows request ID and safe history message without raw upstream body",
+      "GitHub queued sync finishes through automatic polling and re-enables its button",
+      "375, 768, 1024 and 1440px pages fit without horizontal overflow",
+      "Disabled Notion shows explicit state and disables its controls while GitHub remains usable",
+      "Empty Notion and GitHub show helpful empty states with disabled pagination",
+      "Disconnect clears private rows and returns to connection screen",
+      "Invalid key shows safe 401 message with request ID and leaves dashboard locked",
+      "Untrusted titles stay text and unsafe external links are not clickable",
+      "Keyboard Tab/Enter connects; view navigation focuses heading and returns to top"
+    ],
+    "viewports": [
+      375,
+      768,
+      1024,
+      1440
+    ],
+    "screenshots": [
+      "docs/assets/dashboard-desktop.png",
+      "docs/assets/dashboard-mobile.png"
+    ]
+  },
+  "runtimeJarAssetsMatchSource": true,
+  "uiFixtureIncludedInRuntimeJar": false,
+  "localDeployment": {
+    "checkedAtUtc": "2026-11-04T11:39:49.2176515+00:00",
+    "dashboardUrl": "http://127.0.0.1:8080/dashboard",
+    "shellHttpStatus": 200,
+    "cspSelfOnly": true,
+    "rawFormSubmissionBlocked": true,
+    "frameOptions": "DENY",
+    "assets": [
+      {
+        "asset": "index.html",
+        "status": 200,
+        "contentType": "text/html",
+        "sourceHashMatches": true
+      },
+      {
+        "asset": "dashboard.css",
+        "status": 200,
+        "contentType": "text/css",
+        "sourceHashMatches": true
+      },
+      {
+        "asset": "core.mjs",
+        "status": 200,
+        "contentType": "text/javascript",
+        "sourceHashMatches": true
+      },
+      {
+        "asset": "app.mjs",
+        "status": 200,
+        "contentType": "text/javascript",
+        "sourceHashMatches": true
+      },
+      {
+        "asset": "icons.svg",
+        "status": 200,
+        "contentType": "image/svg+xml",
+        "sourceHashMatches": true
+      }
+    ],
+    "unauthenticatedShellOnly": true,
+    "credentialsUsed": false
+  },
+  "liveApi": {
+    "checkedAtUtc": "2026-11-04T11:38:40.5907487+00:00",
+    "health": "UP",
+    "overviewHttpStatus": 200,
+    "days": 30,
+    "counts": {
+      "repositories": 3,
+      "recordedCommits": 2,
+      "authoredCommits": 2,
+      "activeTasks": 6,
+      "archivedTasks": 0
+    },
+    "notionEnabled": true,
+    "notionStatusGroups": 3,
+    "countsMatchPostgreSql": true,
+    "statusGroupTotalMatches": true,
+    "latestGitHubStatus": "SUCCESS",
+    "latestNotionStatus": "SUCCESS",
+    "requestIdEchoed": true,
+    "requestIdLogMatchedExactlyOnce": true,
+    "securityErrorCorrelated": true,
+    "mvcErrorCorrelated": true,
+    "invalidIdReplaced": true,
+    "apiMethodsExecuted": [
+      "GET"
+    ],
+    "upstreamWritesPerformed": false,
+    "secretsIncluded": false,
+    "taskContentsIncluded": false
+  },
+  "postman": {
+    "runner": "Newman 6.2.3",
+    "runSync": false,
+    "httpRequests": 21,
+    "failedRequests": 0,
+    "assertions": 61,
+    "failedAssertions": 0,
+    "failureCount": 0,
+    "postRequestsExecuted": 0,
+    "failures": []
+  },
+  "manualChecklist": {
+    "tasks": 18,
+    "codesMatch": true,
+    "userResultsRecorded": false
+  },
+  "limits": [
+    "Single API instance per database",
+    "Single-user API-key authentication",
+    "No public HTTPS deployment or backup/restore workflow in this milestone",
+    "Browser QA used synthetic data; real app verified separately through HTTP",
+    "No separate Firefox/Safari or load test"
+  ],
+  "secretsIncluded": false,
+  "personalTaskContentsIncluded": false
+}

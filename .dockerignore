@@ -1,6 +1,14 @@
 .git
 .env*
 target
+dist
+backups/
+*.dump
+scripts/
+deploy/
+.github/
+postman/
+.postman/
 .idea
 .vscode
 *.md

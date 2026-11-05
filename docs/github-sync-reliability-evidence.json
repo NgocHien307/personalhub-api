@@ -1,0 +1,118 @@
+{
+  "checkedAtUtc": "2026-11-04T06:20:21.2650036+00:00",
+  "environment": {
+    "springBoot": "4.1.2",
+    "java": "21.0.12.1",
+    "maven": "3.9.16",
+    "postgres": "17.11",
+    "automatedDatabase": "Disposable Docker container selected through IT_DB_URL",
+    "productionDatabaseUsedByAutomatedTests": false
+  },
+  "automatedTests": [
+    {
+      "suite": "surefire-reports",
+      "tests": 80,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "failsafe-reports",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "build": "PASS",
+  "retryVerification": {
+    "http": "MockRestServiceServer",
+    "clockAndSleep": "Controlled test doubles",
+    "maxAttemptsPerPage": 3,
+    "maxWaitPerRetrySeconds": 60,
+    "inducedGitHubRateLimit": false
+  },
+  "recoveryVerification": {
+    "database": "PostgreSQL",
+    "lifecycle": "New coordinator Spring context with pre-existing interrupted runs",
+    "interruptedRunsRecovered": 2,
+    "terminalRunsPreserved": true,
+    "notionRunsPreserved": true,
+    "forcedLiveProcessCrash": false
+  },
+  "localDeployment": {
+    "dockerComposeBuild": "PASS",
+    "checkedAtUtc": "2026-11-04T06:20:21.2650036+00:00",
+    "health": "UP",
+    "schedulerEnabled": "false",
+    "before": {
+      "repositories": 3,
+      "commits": 2,
+      "githubActiveRuns": 0,
+      "notionTasks": 6,
+      "notionActiveRuns": 0
+    },
+    "runs": [
+      {
+        "triggerHttpStatus": 202,
+        "runId": "d4923f61-c4cb-46e8-8a8c-2bf113aa75bc",
+        "observedStates": [
+          "QUEUED",
+          "RUNNING",
+          "SUCCESS"
+        ],
+        "status": "SUCCESS",
+        "repositoriesProcessed": 3,
+        "commitsFetched": 0
+      },
+      {
+        "triggerHttpStatus": 202,
+        "runId": "91c77a37-549b-46eb-b161-b5caf48a7cff",
+        "observedStates": [
+          "QUEUED",
+          "RUNNING",
+          "SUCCESS"
+        ],
+        "status": "SUCCESS",
+        "repositoriesProcessed": 3,
+        "commitsFetched": 0
+      }
+    ],
+    "afterFirst": {
+      "repositories": 3,
+      "commits": 2,
+      "githubActiveRuns": 0,
+      "notionTasks": 6,
+      "notionActiveRuns": 0
+    },
+    "afterSecond": {
+      "repositories": 3,
+      "commits": 2,
+      "githubActiveRuns": 0,
+      "notionTasks": 6,
+      "notionActiveRuns": 0
+    },
+    "repeatCommitCountStable": true,
+    "upstreamWritesPerformed": false,
+    "secretsIncluded": false,
+    "taskContentsIncluded": false
+  },
+  "postman": {
+    "runner": "Newman 6.2.3",
+    "runSync": false,
+    "httpRequests": 18,
+    "failedRequests": 0,
+    "assertions": 33,
+    "failedAssertions": 0,
+    "failureCount": 0,
+    "postRequestsExecuted": 0,
+    "failures": []
+  },
+  "limitations": [
+    "Single API instance per database",
+    "Notion interrupted-run recovery deferred",
+    "Status write failure may require restart after database recovery"
+  ],
+  "secretsIncluded": false,
+  "taskContentsIncluded": false
+}

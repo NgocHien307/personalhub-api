@@ -1,8 +1,31 @@
-name: Java CI
+name: PersonalHub CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
 jobs:
+  operations-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Backup and non-destructive PostgreSQL recovery
+        run: python scripts/verify_operations.py
+      - name: Source archive and credential-pattern check
+        run: python scripts/package_source.py
+  dashboard-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Dashboard client tests
+        run: node --test src/test/frontend/dashboard-core.test.mjs
   unit-tests:
     runs-on: ubuntu-latest
     steps:

@@ -1,0 +1,156 @@
+{
+  "checkedAtUtc": "2026-11-03T10:34:45.6685142+07:00",
+  "owner": "NgocHien307",
+  "commitRepository": "NgocHien307/personalhub-api",
+  "githubApi": "https://api.github.com",
+  "apiVersion": "2026-03-10",
+  "runtime": "JDK 23.0.2, Java target 21, Spring Boot 4.1.2, PostgreSQL 18.3",
+  "database": "Isolated temporary database; no application database used",
+  "scope": "Up to 3 owned public repositories, default branches, initial 30 days",
+  "checks": [
+    {
+      "number": 1,
+      "name": "Trigger returns 202 and sync reaches persisted SUCCESS",
+      "result": "PASS",
+      "evidence": {
+        "statuses": [
+          "QUEUED",
+          "RUNNING",
+          "SUCCESS"
+        ],
+        "runId": "9c030c99-da72-44a5-8e50-245859cd4b11"
+      }
+    },
+    {
+      "number": 2,
+      "name": "Repositories and commits match live GitHub in PostgreSQL",
+      "result": "PASS",
+      "evidence": {
+        "comparedFields": [
+          "repository metadata",
+          "repository ID + commit SHA",
+          "message",
+          "author login",
+          "committer timestamp"
+        ],
+        "repositoryCount": 3,
+        "commitCount": 1,
+        "repositories": [
+          "NgocHien307/personalhub-api",
+          "NgocHien307/Dodge-Rift-Playable",
+          "NgocHien307/boilerplate-npm"
+        ]
+      }
+    },
+    {
+      "number": 3,
+      "name": "Second sync of unchanged live source does not duplicate commits",
+      "result": "PASS",
+      "evidence": {
+        "secondRun": "e09a42fd-2c82-480e-a3d0-c07a6bfce9b1",
+        "sourceShaSetUnchanged": true,
+        "databaseShaSetUnchanged": true,
+        "commitsBefore": 1,
+        "commitsAfter": 1,
+        "firstRun": "9c030c99-da72-44a5-8e50-245859cd4b11",
+        "replayAfterNewCommit": {
+          "commitsFetched": 1,
+          "runId": "3aa04ef2-bbae-438a-b5e9-fee7de8dcd0e",
+          "sourceShaSetUnchanged": true,
+          "commitsAfter": 2,
+          "databaseShaSetUnchanged": true,
+          "commitsBefore": 2
+        }
+      }
+    },
+    {
+      "number": 4,
+      "name": "New real GitHub commit is synced to PostgreSQL and REST",
+      "result": "PASS",
+      "evidence": {
+        "commitSha": "7f9722e37985a629171d361869c907947b087966",
+        "runId": "ff7e4792-6a93-4769-92ac-2c055c6a7300",
+        "commitsAfter": 2,
+        "matchingRows": 1,
+        "commitsBefore": 1,
+        "commitUrl": "https://github.com/NgocHien307/personalhub-api/commit/7f9722e37985a629171d361869c907947b087966",
+        "restEndpointContainsNewSha": true
+      }
+    }
+  ],
+  "runs": [
+    {
+      "id": "9c030c99-da72-44a5-8e50-245859cd4b11",
+      "triggerHttpStatus": 202,
+      "observedStates": [
+        "QUEUED",
+        "RUNNING",
+        "SUCCESS"
+      ],
+      "finalStatus": "SUCCESS",
+      "startedAt": "2026-11-03T03:35:02.367856Z",
+      "finishedAt": "2026-11-03T03:35:04.431746Z",
+      "repositoriesProcessed": 3,
+      "commitsFetched": 1
+    },
+    {
+      "id": "e09a42fd-2c82-480e-a3d0-c07a6bfce9b1",
+      "triggerHttpStatus": 202,
+      "observedStates": [
+        "QUEUED",
+        "RUNNING",
+        "SUCCESS"
+      ],
+      "finalStatus": "SUCCESS",
+      "startedAt": "2026-11-03T03:35:06.606098Z",
+      "finishedAt": "2026-11-03T03:35:07.803059Z",
+      "repositoriesProcessed": 3,
+      "commitsFetched": 0
+    },
+    {
+      "id": "ff7e4792-6a93-4769-92ac-2c055c6a7300",
+      "triggerHttpStatus": 202,
+      "observedStates": [
+        "QUEUED",
+        "RUNNING",
+        "SUCCESS"
+      ],
+      "finalStatus": "SUCCESS",
+      "startedAt": "2026-11-03T03:37:15.383266Z",
+      "finishedAt": "2026-11-03T03:37:17.317696Z",
+      "repositoriesProcessed": 3,
+      "commitsFetched": 1
+    },
+    {
+      "id": "3aa04ef2-bbae-438a-b5e9-fee7de8dcd0e",
+      "triggerHttpStatus": 202,
+      "observedStates": [
+        "QUEUED",
+        "RUNNING",
+        "SUCCESS"
+      ],
+      "finalStatus": "SUCCESS",
+      "startedAt": "2026-11-03T03:37:18.03608Z",
+      "finishedAt": "2026-11-03T03:37:19.215128Z",
+      "repositoriesProcessed": 3,
+      "commitsFetched": 1
+    }
+  ],
+  "verificationCommit": {
+    "message": "test: verify PersonalHub GitHub sync",
+    "tree": "a4917bb630ec151664a68f3f3083234d69ea9d98",
+    "sha": "7f9722e37985a629171d361869c907947b087966",
+    "emptyCommit": true,
+    "refUpdated": true,
+    "branch": "main",
+    "parent": "4b139cb26be0aa1dd9a81a75258142f9798e301b",
+    "url": "https://github.com/NgocHien307/personalhub-api/commit/7f9722e37985a629171d361869c907947b087966"
+  },
+  "completed": 4,
+  "defaultBranch": "main",
+  "artifactSha256": "c3e92485c46c059ebb69f69c6384a8c04fc78d562696e07df80fd3155173f769",
+  "observations": [
+    "The public commit-list query initially did not reflect the newly updated branch. A later read returned the SHA; resumed verification used the same database and same commit, without creating another commit."
+  ],
+  "finishedAtUtc": "2026-11-03T03:37:20.0808777+00:00"
+}

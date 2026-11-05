@@ -41,3 +41,18 @@ app:
     enabled: ${SYNC_ENABLED:false}
     fixed-delay-ms: ${SYNC_FIXED_DELAY_MS:1800000}
     initial-delay-ms: 30000
+  notion:
+    enabled: ${NOTION_ENABLED:false}
+    token: ${NOTION_TOKEN:}
+    data-source-id: ${NOTION_DATA_SOURCE_ID:}
+    base-url: ${NOTION_API_URL:https://api.notion.com/v1}
+    version: ${NOTION_API_VERSION:2025-09-03}
+    title-property: ${NOTION_TITLE_PROPERTY:Name}
+    status-property: ${NOTION_STATUS_PROPERTY:Status}
+    due-property: ${NOTION_DUE_PROPERTY:Due}
+    max-pages: ${NOTION_MAX_PAGES:100}
+    overlap-minutes: ${NOTION_OVERLAP_MINUTES:5}
+    sync:
+      enabled: ${NOTION_SYNC_ENABLED:false}
+      fixed-delay-ms: ${NOTION_SYNC_FIXED_DELAY_MS:1800000}
+      initial-delay-ms: ${NOTION_SYNC_INITIAL_DELAY_MS:30000}

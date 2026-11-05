@@ -1,0 +1,99 @@
+{
+  "checkedAtUtc": "2026-11-04T08:17:41.7771412+00:00",
+  "environment": {
+    "springBoot": "4.1.2",
+    "java": "21.0.12.1",
+    "maven": "3.9.16",
+    "postgres": "17.11",
+    "automatedDatabase": "Disposable Docker container selected through IT_DB_URL",
+    "productionDatabaseUsedByAutomatedTests": false
+  },
+  "build": "PASS",
+  "automatedTests": [
+    {
+      "suite": "surefire-reports",
+      "tests": 95,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "failsafe-reports",
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "contract": {
+    "openapi": "3.1.0",
+    "documentedOperations": 14,
+    "postmanDefinedRequests": 24,
+    "openapiOfficialSchema": "PASS",
+    "postmanOfficialSchema": "PASS"
+  },
+  "verified": [
+    "Correlation spans Spring Security and MVC",
+    "Invalid request IDs replaced; MDC cleared or restored",
+    "HTTP completion logs omit raw URL/query, credentials and bodies",
+    "Notion active/archive/status counts are scoped to configured source",
+    "Disabled and empty Notion have explicit summaries",
+    "Failed latest run retains cache and successful checkpoint",
+    "No upstream client calls from overview"
+  ],
+  "localDeployment": {
+    "dockerComposeBuild": "PASS",
+    "checkedAtUtc": "2026-11-04T08:17:41.7771412+00:00",
+    "health": "UP",
+    "overviewHttpStatus": 200,
+    "days": 30,
+    "counts": {
+      "repositories": 3,
+      "recordedCommits": 2,
+      "authoredCommits": 2,
+      "activeTasks": 6,
+      "archivedTasks": 0
+    },
+    "notionEnabled": true,
+    "notionStatusGroups": 3,
+    "countsMatchPostgreSql": true,
+    "statusGroupTotalMatches": true,
+    "latestGitHubStatus": "SUCCESS",
+    "latestNotionStatus": "SUCCESS",
+    "requestIdEchoed": true,
+    "requestIdLogMatchedExactlyOnce": true,
+    "securityErrorCorrelated": true,
+    "mvcErrorCorrelated": true,
+    "invalidIdReplaced": true,
+    "apiMethodsExecuted": [
+      "GET"
+    ],
+    "upstreamWritesPerformed": false,
+    "secretsIncluded": false,
+    "taskContentsIncluded": false
+  },
+  "postman": {
+    "runner": "Newman 6.2.3",
+    "runSync": false,
+    "httpRequests": 21,
+    "failedRequests": 0,
+    "assertions": 61,
+    "failedAssertions": 0,
+    "failureCount": 0,
+    "postRequestsExecuted": 0,
+    "failures": []
+  },
+  "manualChecklist": {
+    "tasks": 14,
+    "csvMarkdownCodesMatch": true,
+    "userResultsRecorded": false
+  },
+  "limitations": [
+    "Backend overview only; frontend pending",
+    "Cached source data, not live upstream reads",
+    "HTTP correlation only, background jobs use run IDs",
+    "One API instance per database"
+  ],
+  "secretsIncluded": false,
+  "taskContentsIncluded": false
+}

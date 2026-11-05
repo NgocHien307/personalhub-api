@@ -3,7 +3,7 @@ services:
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: personalhub
+      POSTGRES_DB: ${POSTGRES_DB:-personalhub}
       POSTGRES_USER: personalhub
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     ports:
@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U personalhub -d personalhub"]
+      test: ["CMD-SHELL", "pg_isready -U personalhub -d \"$$POSTGRES_DB\""]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -25,7 +25,7 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     environment:
-      DB_URL: jdbc:postgresql://db:5432/personalhub
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-personalhub}
       DB_USERNAME: personalhub
       DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       GITHUB_USERNAME: ${GITHUB_USERNAME:?Set GITHUB_USERNAME in .env}
@@ -33,6 +33,18 @@ services:
       PERSONALHUB_API_KEY: ${PERSONALHUB_API_KEY:?Set PERSONALHUB_API_KEY in .env}
       SYNC_ENABLED: ${SYNC_ENABLED:-false}
       SYNC_MAX_REPOSITORIES: ${SYNC_MAX_REPOSITORIES:-10}
+      NOTION_ENABLED: ${NOTION_ENABLED:-false}
+      NOTION_TOKEN: ${NOTION_TOKEN:-}
+      NOTION_DATA_SOURCE_ID: ${NOTION_DATA_SOURCE_ID:-}
+      NOTION_API_VERSION: ${NOTION_API_VERSION:-2025-09-03}
+      NOTION_TITLE_PROPERTY: ${NOTION_TITLE_PROPERTY:-Name}
+      NOTION_STATUS_PROPERTY: ${NOTION_STATUS_PROPERTY:-Status}
+      NOTION_DUE_PROPERTY: ${NOTION_DUE_PROPERTY:-Due}
+      NOTION_MAX_PAGES: ${NOTION_MAX_PAGES:-100}
+      NOTION_OVERLAP_MINUTES: ${NOTION_OVERLAP_MINUTES:-5}
+      NOTION_SYNC_ENABLED: ${NOTION_SYNC_ENABLED:-false}
+      NOTION_SYNC_FIXED_DELAY_MS: ${NOTION_SYNC_FIXED_DELAY_MS:-1800000}
+      NOTION_SYNC_INITIAL_DELAY_MS: ${NOTION_SYNC_INITIAL_DELAY_MS:-30000}
 
 volumes:
   postgres_data:
